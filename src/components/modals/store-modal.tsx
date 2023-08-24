@@ -3,6 +3,9 @@
 import * as z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useState } from 'react'
+import axios from 'axios'
+import toast from 'react-hot-toast'
 
 import { useStoreModal } from "@/hooks/use-store-modal"
 import { Modal } from "@/components/ui/modal"
@@ -17,6 +20,8 @@ const formSchema = z.object({
 export const StoreModal = () => {
   const storeModal = useStoreModal()
 
+  const [loading, setLoading] = useState(false)
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -25,14 +30,24 @@ export const StoreModal = () => {
   })
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // Crear tienda
-    console.log(values);
+    try {
+      setLoading(true)
+
+      const response = await axios.post('/api/stores', values)
+
+      window.location.assign(`/${response.data.id}`)
+
+    } catch (error) {
+      toast.error('Algo salio mal')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <Modal
       title='Crear tienda'
-      description='Crea un tienda para tu tienda'
+      description='Agrega una tienda para organizar tus productos'
       isOpen={storeModal.isOpen}
       onClose={storeModal.onClose}
     >
@@ -54,6 +69,7 @@ export const StoreModal = () => {
                     <FormLabel>Nombre</FormLabel>
                     <FormControl>
                       <Input
+                        disabled={loading}
                         placeholder='Nombre de la tienda'
                         {...field}
                       />
@@ -68,11 +84,13 @@ export const StoreModal = () => {
                 <Button
                   variant='secondary'
                   onClick={storeModal.onClose}
+                  disabled={loading}
                 >
                   Cancelar
                 </Button>
                 <Button
                   type='submit'
+                  disabled={loading}
                 >
                   Continuar
                 </Button>
