@@ -37,7 +37,7 @@ export async function PATCH (
     return NextResponse.json(store);
 
   } catch (error) {
-    console.log('[STORE-PATCH]', error);
+    console.log('[STORE_PATCH]', error);
     return new NextResponse('Something went wrong', { status: 500 });
   }
 }
@@ -67,7 +67,7 @@ export async function DELETE (
     return NextResponse.json(store);
 
   } catch (error) {
-    console.log('[STORE-DELETE]', error);
+    console.log('[STORE_DELETE]', error);
     return new NextResponse('Something went wrong', { status: 500 });
   }
 }
